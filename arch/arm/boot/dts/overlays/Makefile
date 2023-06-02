@@ -228,6 +228,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
 	spi0-0cs.dtbo \
 	spi0-1cs.dtbo \
 	spi0-2cs.dtbo \
+	spi0-max3421e.dtbo \
 	spi1-1cs.dtbo \
 	spi1-2cs.dtbo \
 	spi1-3cs.dtbo \
