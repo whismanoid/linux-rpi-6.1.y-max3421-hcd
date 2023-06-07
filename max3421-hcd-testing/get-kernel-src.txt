@@ -1,0 +1,169 @@
+# Build RPi kernel source on Pi3 A+/B+, enable MAX3421_HCD device for verification
+# https://gist.github.com/whismanoid/cca370fc037d222ef3e323ab5e2599d2
+#
+# Attempting to test/verify linux MAX3421 HCD (USB-over-SPI) support
+# using Raspberry Pi and MAX3421 evaluation kit
+#
+# Interface Hardware         Top View, board edge here-->|                  
+#                                    RASPBERRY Pi3 A+/B+ |                  
+#       to MAX3421EVKIT                     +--PI3-J8--+ |                  
+# A        +----J4----+                3.3V |[01]  [02]| |A 5.0V            
+# B   3.3V |[01]  [02]| 3.3V        sda g2  | 03   [04]| |B 5.0V            
+# C        | 03    04 |             scl g3  | 05   [06]| |C GND             
+# D        | 05    06 | p.sck           g4  | 07    08 | |D g14 txd         
+# E        | 07    08 | p.miso          GND |[09]   10 | |E g15 rxd         
+# F        | 09    10 | p.mosi          g17 | 11    12 | |F g18             
+# G H.GPX  | 11    12 | p.ssn           g27 | 13   [14]| |G GND             
+# H        | 13    14 |                 g22 | 15    16 | |H g23             
+# I        | 15    16 | p.resn         3.3V |[17]   18 | |I g24             
+# J        | 17    18 | H.RESN   H.MOSI G10 |[19]  [20]| |J GND             
+# K        | 19    20 |          H.MISO G9  |[21]  [22]| |K G25 INT H.INT   
+# L        | 21   [22]| H.INT    H.SCK  G11 |[23]  [24]| |L G8  CE0 H.SSN   
+# M        | 23    24 |                 GND |[25]  [26]| |M g7  ce1         
+# N  p.int | 25   [26]| H.SSN         id.sd | 27    28 | |N id.sc           
+# O H.SCK  |[27]   28 |                 g5  | 29   [30]| |O GND             
+# P H.MISO |[29]   30 | p.gpx           g6  | 31    32 | |P g12             
+# Q H.MOSI |[31]   32 |                 g13 | 33   [34]| |Q GND             
+# R   5.0V |[33]  [34]| 5.0V            g19 | 35    36 | |R g16             
+# S    GND |[35]  [36]| GND             g26 | 37    38 | |S g20             
+# T        +----J4----+                 GND |[39]   40 | |T g21             
+#                                           +--PI3-J8--+ |                  
+#
+# marku@mku-rpi8:~ $ uname -r
+# 6.1.21-v7+
+# marku@mku-rpi8:~ $ uname -a
+# Linux mku-rpi8 6.1.21-v7+ #1642 SMP Mon Apr  3 17:20:52 BST 2023 armv7l GNU/Linux
+# marku@mku-rpi8:~ $ 
+#
+# install the development tools
+marku@mk-rpi8:~ $ sudo apt install git bc bison flex libssl-dev make libncurses5-dev
+#
+# download the linux kernel source code
+# note: this was forked from https://github.com/raspberrypi/linux branch rpi-6.1.y
+marku@mk-rpi8:~ $ cd ~
+marku@mk-rpi8:~ $ mkdir linux
+marku@mk-rpi8:~ $ cd ~/linux
+marku@mk-rpi8:~ $ git clone --depth=1 git@github.com:whismanoid/linux-rpi-6.1.y-max3421-hcd.git
+#
+# check what version the source code is currently on
+marku@mk-rpi8:~ $ head Makefile -n 5
+# SPDX-License-Identifier: GPL-2.0
+VERSION = 6
+PATCHLEVEL = 1
+SUBLEVEL = 31
+EXTRAVERSION =
+#
+# QUESTION:
+# so then if uname -r gives 6.1.21-v7+ but we're building 6.1.31-v7+,
+# then are we publishing the kernel module to the right place?
+# And why aren't we running the 6.1.31-v7+ kernel when we reboot?
+#
+# for reference: this is how to configure the kernel
+# (.config already included in whismanoid/linux-rpi-6.1.y-max3421-hcd.git)
+# default configuration for Rpi3+ 32-bit
+marku@mk-rpi8:~ $ cd ~/linux/linux
+marku@mk-rpi8:~ $ KERNEL=kernel7
+marku@mk-rpi8:~ $ make bcm2709_defconfig
+#
+# for reference: this is how to update the configuration
+# (.config already included in whismanoid/linux-rpi-6.1.y-max3421-hcd.git)
+# make menuconfig
+# ...Device Drivers | USB Support | MAX3421 HCD (USB-over-SPI) support: set it to <M>
+# ...save .config
+#
+# QUESTION: do I need to create or modify a device tree source *.dts or *.dtsi such as
+# arch/arm/boot/dts/overlays/max3421-overlays.dts
+# to make the boot process actually pick up the MAX3421?
+#
+# for reference: update makefile to reference the newly created max3421 dts overlay...
+# (edited edit arch/arm/boot/dts/overlays/Makefile already included in whismanoid/linux-rpi-6.1.y-max3421-hcd.git)
+# ......edit arch/arm/boot/dts/overlays/Makefile
+# ......
+#
+# build the kernel
+# (build.sh already included in whismanoid/linux-rpi-6.1.y-max3421-hcd.git)
+# make dtbs - builds all *.dtb device tree binaries that are compatible with the current kernel configuration
+make -j4 zImage modules dtbs
+sudo make modules_install
+sudo cp arch/arm/boot/dts/*.dtb /boot/
+sudo cp arch/arm/boot/dts/overlays/*.dtb* /boot/overlays/
+sudo cp arch/arm/boot/dts/overlays/README /boot/overlays/
+sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
+sudo cp drivers/usb/host/max3421-hcd.ko /lib/modules/$(uname -r)
+#
+# QUESTION: do I also need to update something in boot config to enable the overlay max3421-overlays.dts?
+#
+# If you now reboot, your Raspberry Pi should be running your freshly-compiled kernel!
+#
+marku@mk-rpi8:~ $ uname -r
+# ... should be 6.1.31-v7+ if we are running the freshly-built kernel
+# ... not the stock 6.1.27-v7+ kernel image, right?
+#
+# You can verify the max3421 module is available with:
+marku@mk-rpi8:~ $ find ~/linux/linux -type f -name '*.ko' | grep -i max3421
+marku@mk-rpi8:~ $ find /lib/modules/$(uname -r) -type f -name '*.ko' | grep -i max3421
+#
+# Confirm that the GPIO pins are configured as expected:
+marku@mk-rpi8:~ $ raspi-gpio get 25,8,10,9,11
+#
+# See also:
+#
+# Device Tree Customization
+# https://developer.toradex.com/software/linux-resources/device-tree/device-tree-customization/
+#
+# linux\Documentation\devicetree\bindings\usb\maxim,max3421.txt
+#-----
+#Maxim Integrated SPI-based USB 2.0 host controller MAX3421E
+#
+#Required properties:
+# - compatible: Should be "maxim,max3421"
+# - spi-max-frequency: maximum frequency for this device must not exceed 26 MHz.
+# - reg: chip select number to which this device is connected.
+# - maxim,vbus-en-pin: <GPOUTx ACTIVE_LEVEL>
+#   GPOUTx is the number (1-8) of the GPOUT pin of MAX3421E to drive Vbus.
+#   ACTIVE_LEVEL is 0 or 1.
+# - interrupts: the interrupt line description for the interrupt controller.
+#   The driver configures MAX3421E for active low level triggered interrupts,
+#   configure your interrupt line accordingly.
+#
+#Example:
+#
+#	usb@0 {
+#		compatible = "maxim,max3421";
+#		reg = <0>;
+#		maxim,vbus-en-pin = <3 1>;
+#		spi-max-frequency = <26000000>;
+#		interrupt-parent = <&PIC>;
+#		interrupts = <42>;
+#	};
+#-----
+#
+# /boot/config.txt was modified, adding the line
+# dtoverlay=spi0-max3421e
+marku@mk-rpi8:~ $ diff /boot/config-max3421.txt /boot/config-standard.txt 
+51,52d50
+< # 2023-06-06 MAX3421 test: dtoverlay=spi0-max3421e
+< dtoverlay=spi0-max3421e
+marku@mk-rpi8:~ $ 
+#
+# /boot/overlays is verified to contain spi0-max3421e.dtbo
+marku@mk-rpi8:~ $ ls /boot/overlays/spi0-max*
+/boot/overlays/spi0-max3421e.dtbo
+#
+# however it seems no sign of max3421 in dmesg
+#
+marku@mk-rpi8:~ $ dmesg | grep -i max
+marku@mk-rpi8:~ $ lsmod | grep -i max
+#
+# QUESTION: the kernel module was copied into /lib/modules/$(uname -r) but modprobe claims it can't find the module
+marku@mk-rpi8:~ $ find /lib/modules -type f -name '*.ko' | grep -i max3421-hcd.ko
+/lib/modules/6.1.21-v7+/max3421-hcd.ko
+marku@mk-rpi8:~ $ sudo modprobe max3421-hcd
+modprobe: FATAL: Module max3421-hcd not found in directory /lib/modules/6.1.21-v7+
+marku@mk-rpi8:~ $ sudo modprobe max3421-hcd.ko
+modprobe: FATAL: Module max3421-hcd.ko not found in directory /lib/modules/6.1.21-v7+
+marku@mk-rpi8:~ $ sudo modprobe max3421-hcd.ko
+modprobe: FATAL: Module max3421-hcd.ko not found in directory /lib/modules/6.1.21-v7+
+marku@mk-rpi8:~ $ ls /lib/modules/6.1.21-v7+/max3421*
+/lib/modules/6.1.21-v7+/max3421-hcd.ko
+marku@mk-rpi8:~ $ 
