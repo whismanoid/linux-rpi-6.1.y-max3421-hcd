@@ -1,4 +1,6 @@
 # Build RPi kernel source on Pi3 A+/B+, enable MAX3421_HCD device for verification
+#
+# earlier notes gist here:
 # https://gist.github.com/whismanoid/cca370fc037d222ef3e323ab5e2599d2
 #
 # Attempting to test/verify linux MAX3421 HCD (USB-over-SPI) support
@@ -167,3 +169,13 @@ modprobe: FATAL: Module max3421-hcd.ko not found in directory /lib/modules/6.1.2
 marku@mk-rpi8:~ $ ls /lib/modules/6.1.21-v7+/max3421*
 /lib/modules/6.1.21-v7+/max3421-hcd.ko
 marku@mk-rpi8:~ $ 
+#
+# 2023-09-09
+# deployed the new kernel 6.1.31-v7+ 
+# lsmod shows max3421_hcd size 20480 but used by 0
+# during bootup, two error messages briefly show on the desktop window
+#    Failed to load overlay 'spi0-max3421e'
+#    dterror: not a valid FDT - err -9
+#    QUESTION: are these error messages logged anywhere? Not in dmesg...
+# Looks like everything's working except spi0-max3421e overlay is misconfigured?
+#
