@@ -170,12 +170,15 @@ marku@mk-rpi8:~ $ ls /lib/modules/6.1.21-v7+/max3421*
 /lib/modules/6.1.21-v7+/max3421-hcd.ko
 marku@mk-rpi8:~ $ 
 #
-# 2023-09-09
-# deployed the new kernel 6.1.31-v7+ 
-# lsmod shows max3421_hcd size 20480 but used by 0
-# during bootup, two error messages briefly show on the desktop window
-#    Failed to load overlay 'spi0-max3421e'
+# 2023-09-09 deployed the new kernel 6.1.31-v7+
+# During GUI startup, two error messages briefly show on the desktop window
 #    dterror: not a valid FDT - err -9
+#    Failed to load overlay 'spi0-max3421e'
 #    QUESTION: are these error messages logged anywhere? Not in dmesg...
 # Looks like everything's working except spi0-max3421e overlay is misconfigured?
+# After sudo modprobe max3421-hcd, lsmod shows max3421_hcd size 20480 but used by 0.
+marku@mk-rpi8:~ $ lsmod | grep -i max3421
+marku@mk-rpi8:~ $ sudo modprobe max3421-hcd
+marku@mk-rpi8:~ $ lsmod | grep -i max3421
+max3421_hcd            20480  0
 #
