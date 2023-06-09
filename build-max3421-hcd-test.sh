@@ -30,8 +30,8 @@ sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
 printf "sudo cp drivers/usb/host/max3421-hcd.ko /lib/modules/6.1.31-v7+\n"
 sudo cp drivers/usb/host/max3421-hcd.ko /lib/modules/6.1.31-v7+
 
-printf "find /lib/modules -type f -name '*.ko' | grep -i max3421-hcd.ko"
+printf "find /lib/modules -type f -name '*.ko' | grep -i max3421-hcd.ko\n"
 find /lib/modules -type f -name '*.ko' | grep -i max3421-hcd.ko
 
-printf "sudo modprobe max3421-hcd"
+printf "sudo modprobe max3421-hcd\n"
 sudo modprobe max3421-hcd
