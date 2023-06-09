@@ -20,6 +20,9 @@ sudo cp arch/arm/boot/dts/overlays/*.dtb* /boot/overlays/
 printf "sudo cp arch/arm/boot/dts/overlays/README /boot/overlays/\n"
 sudo cp arch/arm/boot/dts/overlays/README /boot/overlays/
 
+printf "sudo cp /boot/$KERNEL.img /boot/$KERNEL_$(uname -r).img\n"
+sudo cp /boot/$KERNEL.img /boot/$KERNEL_$(uname -r).img
+
 printf "sudo cp arch/arm/boot/zImage /boot/$KERNEL.img\n"
 sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
 
