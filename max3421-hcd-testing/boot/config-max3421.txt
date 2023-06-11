@@ -48,6 +48,8 @@
 #dtoverlay=gpio-ir-tx,gpio_pin=18
 
 # Additional overlays and parameters are documented /boot/overlays/README
+# diagnostic: enable device tree debug log, accessible by sudo vcdbg log msg
+dtdebug=on
 # 2023-06-06 MAX3421 test: dtoverlay=spi0-max3421e
 dtoverlay=spi0-max3421e
 

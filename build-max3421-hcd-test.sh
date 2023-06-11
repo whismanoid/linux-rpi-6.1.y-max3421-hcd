@@ -38,3 +38,6 @@ find /lib/modules -type f -name '*.ko' | grep -i max3421-hcd.ko
 
 printf "sudo modprobe max3421-hcd\n"
 sudo modprobe max3421-hcd
+
+printf "lsmod | grep -i max3421\n"
+lsmod | grep -i max3421
