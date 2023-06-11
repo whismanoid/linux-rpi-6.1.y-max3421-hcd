@@ -182,3 +182,17 @@ marku@mk-rpi8:~ $ sudo modprobe max3421-hcd
 marku@mk-rpi8:~ $ lsmod | grep -i max3421
 max3421_hcd            20480  0
 #
+# TODO: try again with /boot/config.txt dtdebug=on, reboot, check sudo vcdbg log msg
+# Info on troubleshooting device tree issues from
+# https://github.com/raspberrypi/firmware/blob/master/boot/overlays/README
+# If you are experiencing problems that you think are DT-related, enable DT
+# diagnostic output by adding this to /boot/config.txt:
+#     dtdebug=on
+# and rebooting. Then run:
+#     sudo vcdbg log msg
+# and look for relevant messages.
+# Further reading
+# This is only meant to be a quick introduction to the subject of Device Tree on
+# Raspberry Pi. There is a more complete explanation here:
+# http://www.raspberrypi.org/documentation/configuration/device-tree.md
+#
