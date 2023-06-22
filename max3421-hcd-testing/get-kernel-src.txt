@@ -198,3 +198,13 @@ max3421_hcd            20480  0
 # Raspberry Pi. There is a more complete explanation here:
 # http://www.raspberrypi.org/documentation/configuration/device-tree.md
 #
+# Now able to build, and RPi3A+ device tree overlay loads the max3421 hcd driver,
+# but not work. In dmesg get "max3421 bad rev 0x00" from max3421_spi_thread when
+# it tried reading register 18(0x12) expecting 0x13 (silicon revision id constant),
+# but max3421 did not drive any data on its miso data pin (per oscilloscope).
+# If I manually short miso-mosi, the device driver reads the loopback value 0x18
+# (which fails as expected, but proves that the max3421 isn't driving its miso data pin).
+# Reset is connected to 3.3V logic supply.
+# max3421 should boot up in half-duplex mode.
+# Is the chip select configured correctly?
+#
