@@ -31,6 +31,8 @@
 # T        +----J4----+                 GND |[39]   40 | |T g21             
 #                                           +--PI3-J8--+ |                  
 #
+#   Note: MAX3421EVKIT reset signal H.RESN must be driven by 3.3V
+#
 # marku@mku-rpi8:~ $ uname -r
 # 6.1.21-v7+
 # marku@mku-rpi8:~ $ uname -a
