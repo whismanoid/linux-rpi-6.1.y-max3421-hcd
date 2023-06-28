@@ -20,8 +20,8 @@
 # I        | 15    16 | p.resn         3.3V |[17]   18 | |I g24             
 # J        | 17    18 | H.RESN   H.MOSI G10 |[19]  [20]| |J GND             
 # K        | 19    20 |          H.MISO G9  |[21]  [22]| |K G25 INT H.INT   
-# L        | 21   [22]| H.INT    H.SCK  G11 |[23]  [24]| |L G8  CE0 H.SSN   
-# M        | 23    24 |                 GND |[25]  [26]| |M g7  ce1         
+# L        | 21   [22]| H.INT    H.SCK  G11 |[23]  [24]| |L G8  CE0
+# M        | 23    24 |                 GND |[25]  [26]| |M g7  CE1 H.SSN            
 # N  p.int | 25   [26]| H.SSN         id.sd | 27    28 | |N id.sc           
 # O H.SCK  |[27]   28 |                 g5  | 29   [30]| |O GND             
 # P H.MISO |[29]   30 | p.gpx           g6  | 31    32 | |P g12             
@@ -32,6 +32,7 @@
 #                                           +--PI3-J8--+ |                  
 #
 #   Note: MAX3421EVKIT reset signal H.RESN must be driven by 3.3V
+#   Note: MAX3421EVKIT chip select signal H.SSN is driven by spi0.1 = CE1 = GPIO G7
 #
 # marku@mku-rpi8:~ $ uname -r
 # 6.1.21-v7+
@@ -207,4 +208,6 @@ max3421_hcd            20480  0
 # Reset is connected to 3.3V logic supply.
 # max3421 should boot up in half-duplex mode.
 # Is the chip select configured correctly?
+# ... was using the wrong chip select.
+# I'm not sure why the system is using spi0.1 instead of spi0.0, but whatever. it works.
 #
