@@ -20,8 +20,8 @@
 # I        | 15    16 | p.resn         3.3V |[17]   18 | |I g24             
 # J        | 17    18 | H.RESN   H.MOSI G10 |[19]  [20]| |J GND             
 # K        | 19    20 |          H.MISO G9  |[21]  [22]| |K G25 INT H.INT   
-# L        | 21   [22]| H.INT    H.SCK  G11 |[23]  [24]| |L G8  CE0
-# M        | 23    24 |                 GND |[25]  [26]| |M g7  CE1 H.SSN            
+# L        | 21   [22]| H.INT    H.SCK  G11 |[23]  [24]| |L G8  CE0         
+# M        | 23    24 |                 GND |[25]  [26]| |M g7  CE1 H.SSN   
 # N  p.int | 25   [26]| H.SSN         id.sd | 27    28 | |N id.sc           
 # O H.SCK  |[27]   28 |                 g5  | 29   [30]| |O GND             
 # P H.MISO |[29]   30 | p.gpx           g6  | 31    32 | |P g12             
